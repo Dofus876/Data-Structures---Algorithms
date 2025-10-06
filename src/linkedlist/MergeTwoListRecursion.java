@@ -1,9 +1,7 @@
 package linkedlist;
 
 public class MergeTwoListRecursion {
-<<<<<<< HEAD
     
-=======
   class Node {
         int data;
         Node next;
@@ -21,5 +19,5 @@ public class MergeTwoListRecursion {
             return head2;
         }
     }
->>>>>>> 920c43638aced2a8824d32eab6e9999060af40e6
+
 }
