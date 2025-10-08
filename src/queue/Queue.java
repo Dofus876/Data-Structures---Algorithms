@@ -17,8 +17,13 @@ public class Queue<E> {
 
     public void enqueue(E element) {
         Node newNode = new Node(element);
-        newNode.next = rear;
-        rear = newNode;
+        if (isEmpty()) {
+            front = newNode;
+            rear = newNode;
+        } else {
+            rear.next = newNode;
+            rear = newNode;
+        }
         size++;
     }
 
@@ -28,6 +33,8 @@ public class Queue<E> {
         }
         E element = front.element;
         front = front.next;
+        size--;
+        if (front == null) rear = null;
         return element;
     }
 
@@ -50,11 +57,11 @@ public class Queue<E> {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("[");
-        while (front != null) {
-            stringBuilder.append(front.element);
-            if (front.next != null) {
-                stringBuilder.append(",");
-            }
+        Node current = front;
+        while (current != null) {
+            stringBuilder.append(current.element);
+            if (current.next != null) stringBuilder.append(", ");
+            current = current.next;
         }
         stringBuilder.append("]");
         return stringBuilder.toString();
