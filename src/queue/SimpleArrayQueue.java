@@ -1,5 +1,7 @@
 package queue;
 
+import java.util.NoSuchElementException;
+
 public class SimpleArrayQueue<E> implements Queue<E> {
     private E[] queue;
     private int capacity ;
@@ -13,26 +15,29 @@ public class SimpleArrayQueue<E> implements Queue<E> {
 
     @Override
     public void enqueue(E element) {
-        if (count < capacity) {
-            queue[(front + count) % capacity] = element;
-            count++;
+        if (count == capacity) {
+            throw new IllegalStateException("Queue is full");
         }
+        int rearIndex = (front + count) % capacity;
+        queue[rearIndex] = element;
+        count++;
     }
     @Override
     public E dequeue() {
-        if (count > 0) {
-            E element = queue[front];
-            front++;
-            count--;
-            if (front == capacity) {
-                front = 0;
-            }
-            return element;
+        if (isEmpty()) {
+            throw new NoSuchElementException("Queue is empty");
         }
-        return null;
+        E element = queue[front];
+        queue[front] = null; 
+        front = (front + 1) % capacity; 
+        count--;
+        return element;
     }
     @Override
     public E peek() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("Queue is empty");
+        }
         return queue[front];
     }
     @Override
