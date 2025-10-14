@@ -30,7 +30,6 @@ public class SimpleArrayStack<T> implements SimpleStack<T> {
      * Lấy và loại bỏ phần tử ở đỉnh ngăn xếp.
      * @return phần tử ở đỉnh ngăn xếp, hoặc null nếu ngăn xếp rỗng
      */
-    @SuppressWarnings("unchecked")
     @Override
     public T pop() {
         if (isEmpty()) {
