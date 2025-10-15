@@ -3,89 +3,80 @@ package iteration;
 import java.util.NoSuchElementException;
 import java.util.ConcurrentModificationException;
 
-// Interface Stack (dùng chung cho cả ArrayStack và LinkedListStack)
-interface Stack<E> extends Iterable<E> {
-    void push(E element);
-    E pop();
-    E peek();
-    boolean isEmpty();
-    int size();
-}
 
-// Lớp LinkedListStack hoàn chỉnh và mạnh mẽ
-public class LinkedListStack<E> implements Stack<E> {
+public class MyArrayStack<E> implements MyStack<E> {
 
-    // Lớp Node nên là 'static' vì nó không cần truy cập vào instance của LinkedListStack
-    private static class Node<E> {
-        private E item;
-        private Node<E> next;
-    }
-
-    private Node<E> top = null;
-    private int size = 0;
-
+    private E[] stack;
+    private int top = 0;
+    
     // Biến đếm số lần thay đổi cấu trúc của stack
     private int modCount = 0;
 
+    public MyArrayStack(int capacity) {
+        if (capacity <= 0) {
+            throw new IllegalArgumentException("Capacity must be positive.");
+        }
+        stack = (E[]) new Object[capacity];
+    }
+
     @Override
     public void push(E element) {
-        Node<E> newNode = new Node<>();
-        newNode.item = element;
-        newNode.next = top;
-        top = newNode;
-        size++;
+        if (top == stack.length) {
+            // Có thể cài đặt tự động tăng kích thước mảng ở đây
+            throw new IllegalStateException("Stack is full.");
+        }
+        stack[top++] = element;
         modCount++; // Tăng biến đếm khi có thay đổi
     }
 
     @Override
     public E pop() {
         if (isEmpty()) {
-            throw new NoSuchElementException("Stack is empty");
+            throw new NoSuchElementException("Stack is empty.");
         }
-        E item = top.item;
-        top = top.next; // GC sẽ tự động dọn dẹp node cũ
-        size--;
+        E element = stack[--top];
+        stack[top] = null; // Giúp trình dọn rác (Garbage Collector)
         modCount++; // Tăng biến đếm khi có thay đổi
-        return item;
+        return element;
     }
-
+    
     @Override
     public E peek() {
         if (isEmpty()) {
             throw new NoSuchElementException("Stack is empty");
         }
-        return top.item;
+        return stack[top - 1];
     }
 
     @Override
     public boolean isEmpty() {
-        return top == null;
+        return top == 0;
     }
 
     @Override
     public int size() {
-        return size;
+        return top;
     }
 
     @Override
-    public Iterator<E> iterator() {
-        return new LinkedListStackIterator();
+    public MyIterator<E> iterator() {
+        return new ArrayStackIterator();
     }
 
     // --- Lớp nội tại Iterator với cơ chế Fail-Fast ---
-    private class LinkedListStackIterator implements Iterator<E> {
-        private Node<E> current = top;
-
+    private class ArrayStackIterator implements MyIterator<E> {
+        private int i = top;
+        
         // Lưu lại số lần thay đổi tại thời điểm iterator được tạo ra
         private final int expectedModCount = modCount;
 
         @Override
         public boolean hasNext() {
-            // Kiểm tra trước khi duyệt
+            // Trước khi kiểm tra, xem stack có bị thay đổi từ bên ngoài không
             if (expectedModCount != modCount) {
                 throw new ConcurrentModificationException();
             }
-            return current != null;
+            return i > 0;
         }
 
         @Override
@@ -96,9 +87,7 @@ public class LinkedListStack<E> implements Stack<E> {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            E item = current.item;
-            current = current.next;
-            return item;
+            return stack[--i];
         }
 
         @Override

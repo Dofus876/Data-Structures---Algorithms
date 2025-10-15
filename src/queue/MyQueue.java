@@ -1,6 +1,6 @@
 package queue;
 
-public interface Queue<T> {
+public interface MyQueue<T> {
     void enqueue(T element);
     T dequeue();
     T peek();

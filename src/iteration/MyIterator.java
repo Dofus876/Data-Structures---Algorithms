@@ -1,6 +1,6 @@
 package iteration;
 
-public interface Iterator<E> {
+public interface MyIterator<E> {
     boolean hasNext();
     E next();
     void remove();

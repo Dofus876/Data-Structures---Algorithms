@@ -1,6 +1,6 @@
 package queue;
 
-public class SimpleLinkedQueue<E> implements Queue<E>{
+public class SimpleLinkedQueue<E> implements MyQueue<E>{
     class Node {
         E element;
         Node next;

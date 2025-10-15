@@ -2,7 +2,7 @@ package iteration;
 
 import java.util.NoSuchElementException;
 
-public interface Stack<E> extends Iterable<E> {
+public interface MyStack<E> extends MyIterable<E> {
     /**
      * Thêm một phần tử vào đỉnh của stack.
      */
