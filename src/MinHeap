@@ -1,0 +1,175 @@
+import java.util.*;
+
+// Lớp triển khai cấu trúc dữ liệu Min Heap (Đống Cực Tiểu)
+class MinHeap {
+    
+    // Mảng để lưu trữ các phần tử của heap
+    private int[] heapArray;
+    
+    // Kích thước tối đa của heap
+    private int capacity;
+    
+    // Số lượng phần tử hiện tại trong heap
+    private int current_heap_size;
+
+    // Hàm khởi tạo (Constructor)
+    public MinHeap(int n) {
+        capacity = n;
+        heapArray = new int[capacity];
+        current_heap_size = 0;
+    }
+    
+    // Hoán vị hai phần tử trong mảng
+    private void swap(int[] arr, int a, int b) {
+        int temp = arr[a];
+        arr[a] = arr[b];
+        arr[b] = temp;
+    }
+    
+    
+    // Lấy chỉ số của nút cha
+    private int parent(int key) {
+        return (key - 1) / 2;
+    }
+    
+    // Lấy chỉ số của nút con trái
+    private int left(int key) {
+        return 2 * key + 1;
+    }
+    
+    // Lấy chỉ số của nút con phải
+    private int right(int key) {
+        return 2 * key + 2;
+    }
+    
+    
+    // Chèn một khóa (key) mới vào heap
+    public boolean insertKey(int key) {
+        if (current_heap_size == capacity) {
+            // Heap đã đầy
+            return false;
+        }
+    
+        // Đầu tiên, chèn khóa mới vào cuối mảng
+        int i = current_heap_size;
+        heapArray[i] = key;
+        current_heap_size++;
+        
+        // Sửa lại heap nếu tính chất min-heap bị vi phạm
+        // (Vun đống từ dưới lên - bubble up)
+        while (i != 0 && heapArray[i] < heapArray[parent(i)]) {
+            swap(heapArray, i, parent(i));
+            i = parent(i);
+        }
+        return true;
+    }
+    
+    // Giảm giá trị của một khóa tại chỉ số `key` thành `new_val`.
+    // Giả định rằng new_val nhỏ hơn giá trị hiện tại.
+    public void decreaseKey(int key, int new_val) {
+        heapArray[key] = new_val;
+
+        while (key != 0 && heapArray[key] < heapArray[parent(key)]) {
+            swap(heapArray, key, parent(key));
+            key = parent(key);
+        }
+    }
+    
+    // Trả về phần tử nhỏ nhất (nút gốc) của heap
+    public int getMin() {
+        return heapArray[0];
+    }
+    
+    
+    // Xóa và trả về phần tử nhỏ nhất (nút gốc) khỏi heap
+    public int extractMin() {
+        if (current_heap_size <= 0) {
+            return Integer.MAX_VALUE;
+        }
+
+        if (current_heap_size == 1) {
+            current_heap_size--;
+            return heapArray[0];
+        }
+        
+        // Lưu lại giá trị nhỏ nhất
+        int root = heapArray[0];
+
+        // Đưa phần tử cuối cùng lên gốc và giảm kích thước heap
+        heapArray[0] = heapArray[current_heap_size - 1];
+        current_heap_size--;
+        
+        // Vun đống lại từ gốc để đảm bảo tính chất min-heap
+        MinHeapify(0);
+
+        return root;
+    }
+        
+    // Xóa một khóa tại chỉ số `key`.
+    // Cách hoạt động: giảm giá trị của khóa đó xuống âm vô cùng,
+    // sau đó gọi extractMin() để loại bỏ nó.
+    public void deleteKey(int key) {
+        decreaseKey(key, Integer.MIN_VALUE);
+        extractMin();
+    }
+    
+    // Một phương thức đệ quy để vun đống một cây con
+    // với gốc tại chỉ số `key`.
+    // Giả định rằng các cây con đã là heap.
+    // (Vun đống từ trên xuống - bubble down)
+    private void MinHeapify(int key) {
+        int l = left(key);
+        int r = right(key);
+
+        int smallest = key;
+        if (l < current_heap_size && heapArray[l] < heapArray[smallest]) {
+            smallest = l;
+        }
+        if (r < current_heap_size && heapArray[r] < heapArray[smallest]) {
+            smallest = r;
+        }
+
+        if (smallest != key) {
+            swap(heapArray, key, smallest);
+            MinHeapify(smallest);
+        }
+    }
+    
+    // Tăng giá trị của một khóa tại chỉ số `key` thành `new_val`.
+    // Giả định rằng new_val lớn hơn giá trị hiện tại.
+    public void increaseKey(int key, int new_val) {
+        heapArray[key] = new_val;
+        MinHeapify(key);
+    }
+    
+    // Thay đổi giá trị của một khóa
+    public void changeValueOnAKey(int key, int new_val) {
+        if (heapArray[key] == new_val) {
+            return;
+        }
+        if (heapArray[key] < new_val) {
+            increaseKey(key, new_val);
+        } else {
+            decreaseKey(key, new_val);
+        }
+    }
+}
+
+// Lớp để kiểm thử (Driver Code)
+class MinHeapTest {
+    public static void main(String[] args) {
+        MinHeap h = new MinHeap(11);
+        h.insertKey(3);
+        h.insertKey(2);
+        h.deleteKey(1);
+        h.insertKey(15);
+        h.insertKey(5);
+        h.insertKey(4);
+        h.insertKey(45);
+        System.out.print(h.extractMin() + " ");
+        System.out.print(h.getMin() + " ");
+        
+        h.decreaseKey(2, 1);
+        System.out.print(h.getMin());
+    }
+}
